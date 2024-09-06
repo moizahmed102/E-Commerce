@@ -25,15 +25,11 @@ export const createProduct = async (req, res) => {
   }
 };
 
-// Get Products with filtering and sorting
 export const getProducts = async (req, res) => {
   try {
-    // Extract query parameters for filtering and sorting
     const { category, minPrice, maxPrice, sort, size } = req.query;
 
     let filter = {};
-
-    // If category is provided, find the corresponding category and filter products
     if (category) {
       const categoryData = await Category.findOne({ name: category });
       if (categoryData) {
@@ -48,17 +44,16 @@ export const getProducts = async (req, res) => {
       if (maxPrice) filter.price.$lte = maxPrice;
     }
     if (size) {
-      filter.size = { $in: size.split(",") }; // Assume exact size match
-    }
-    // Sorting logic for price
-    let sortOption = {};
-    if (sort === "high") {
-      sortOption.price = -1; // Sort by price in descending order (high to low)
-    } else if (sort === "low") {
-      sortOption.price = 1; // Sort by price in ascending order (low to high)
+      filter.size = { $in: size.split(",") };
     }
 
-    // Find products with filtering and sorting
+    let sortOption = {};
+    if (sort === "high") {
+      sortOption.price = -1;
+    } else if (sort === "low") {
+      sortOption.price = 1;
+    }
+
     const products = await Product.find(filter)
       .sort(sortOption)
       .populate("category", "name");
