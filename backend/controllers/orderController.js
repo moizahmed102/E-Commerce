@@ -1,29 +1,48 @@
 import Order from "../model/Order.js";
+import Cart from "../model/Cart.js";
 
 export const createOrder = async (req, res) => {
-  const { orderItems, totalPrice, address, phone } = req.body;
+  const { address, phone } = req.body;
+  const userId = req.user.id;
 
   try {
+    const cart = await Cart.findOne({ user: userId }).populate(
+      "orderItems.product",
+      "price"
+    );
+
+    if (!cart) {
+      return res.status(404).json({ message: "Cart not found" });
+    }
     const order = new Order({
-      user: req.user._id,
-      orderItems,
-      totalPrice,
+      user: userId,
+      orderItems: cart.orderItems,
+      totalPrice: cart.totalPrice,
       address,
       phone,
+      status: "pending",
     });
-
-    const savedOrder = await order.save();
-    res.status(201).json({ message: "Order created", order: savedOrder });
+    await order.save();
+    await Cart.deleteOne({ user: userId });
+    return res.status(201).json(order);
   } catch (error) {
-    res.status(500).json({ message: "Failed to create order", error });
+    return res.status(500).json({ error: "Failed to create order" });
   }
 };
 
-export const getUserOrders = async (req, res) => {
+export const getOrders = async (req, res) => {
+  const userId = req.user.id;
+
   try {
-    const orders = await Order.find({ user: req.user.id });
-    res.status(200).json(orders);
-  } catch (err) {
-    res.status(500).json({ error: "Failed to retrieve orders" });
+    const orders = await Order.find({ user: userId }).populate(
+      "orderItems.product",
+      "title price"
+    );
+    if (!orders || orders.length === 0) {
+      return res.status(404).json({ message: "No orders found" });
+    }
+    return res.status(200).json(orders);
+  } catch (error) {
+    return res.status(500).json({ error: "Failed to retrieve orders" });
   }
 };
