@@ -26,7 +26,7 @@ db.once("open", () => {
 
 app.use("/api", userRoute);
 app.use("/api/products", productRoute);
-app.use("/api/orders", orderRoute);
+app.use("/api/order", orderRoute);
 app.use("/api/cart", cartRoute);
 app.use("/api/categories", categoryRoute);
 app.listen(port, () => {
