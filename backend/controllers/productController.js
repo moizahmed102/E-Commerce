@@ -27,7 +27,7 @@ export const createProduct = async (req, res) => {
 
 export const getProducts = async (req, res) => {
   try {
-    const { category, minPrice, maxPrice, sort, size } = req.query;
+    const { category, minPrice, maxPrice, sort } = req.query;
 
     let filter = {};
     if (category) {
@@ -43,10 +43,6 @@ export const getProducts = async (req, res) => {
       if (minPrice) filter.price.$gte = minPrice;
       if (maxPrice) filter.price.$lte = maxPrice;
     }
-    if (size) {
-      filter.size = { $in: size.split(",") };
-    }
-
     let sortOption = {};
     if (sort === "high") {
       sortOption.price = -1;
