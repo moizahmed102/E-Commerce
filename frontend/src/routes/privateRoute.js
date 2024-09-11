@@ -1,11 +1,28 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { Navigate } from "react-router-dom";
+import { Button, Typography, Box } from "@mui/material";
 
 const PrivateRoute = ({ children }) => {
   const { token } = useSelector((state) => state.auth);
 
-  return token ? children : <Navigate to="/login" />;
+  if (token) {
+    return children;
+  }
+
+  return (
+    <Box sx={{ textAlign: "center", mt: 5 }}>
+      <Typography variant="h6" mb={2}>
+        You need to be logged in to access this page. Sign Up now to order.
+      </Typography>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => (window.location.href = "/")}
+      >
+        Create an Account
+      </Button>
+    </Box>
+  );
 };
 
 export default PrivateRoute;

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { signup } from '../features/slices/authSlice';
+import { TextField, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 const Signup = () => {
@@ -15,11 +16,9 @@ const Signup = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
     if (formData.password !== formData.confirmPassword) {
       return alert("Passwords do not match");
     }
-
     dispatch(signup(formData));
   };
 
@@ -29,11 +28,41 @@ const Signup = () => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <input type="text" name="name" placeholder="Name" onChange={handleChange} />
-      <input type="email" name="email" placeholder="Email" onChange={handleChange} />
-      <input type="password" name="password" placeholder="Password" onChange={handleChange} />
-      <input type="password" name="confirmPassword" placeholder="Confirm Password" onChange={handleChange} />
-      <button type="submit">Sign Up</button>
+      <TextField
+        label="Name"
+        name="name"
+        type="text"
+        fullWidth
+        margin="normal"
+        onChange={handleChange}
+      />
+      <TextField
+        label="Email"
+        name="email"
+        type="email"
+        fullWidth
+        margin="normal"
+        onChange={handleChange}
+      />
+      <TextField
+        label="Password"
+        name="password"
+        type="password"
+        fullWidth
+        margin="normal"
+        onChange={handleChange}
+      />
+      <TextField
+        label="Confirm Password"
+        name="confirmPassword"
+        type="password"
+        fullWidth
+        margin="normal"
+        onChange={handleChange}
+      />
+      <Button type="submit" variant="contained" color="primary" fullWidth>
+        Sign Up
+      </Button>
     </form>
   );
 };

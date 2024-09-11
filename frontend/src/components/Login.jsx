@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { login } from '../features/slices/authSlice';
+import { TextField, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
@@ -24,9 +25,25 @@ const Login = () => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <input type="email" name="email" placeholder="Email" onChange={handleChange} />
-      <input type="password" name="password" placeholder="Password" onChange={handleChange} />
-      <button type="submit">Login</button>
+      <TextField
+        label="Email"
+        name="email"
+        type="email"
+        fullWidth
+        margin="normal"
+        onChange={handleChange}
+      />
+      <TextField
+        label="Password"
+        name="password"
+        type="password"
+        fullWidth
+        margin="normal"
+        onChange={handleChange}
+      />
+      <Button type="submit" variant="contained" color="primary" fullWidth>
+        Login
+      </Button>
     </form>
   );
 };

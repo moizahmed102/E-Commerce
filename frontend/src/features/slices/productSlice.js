@@ -1,3 +1,4 @@
+// features/slices/productSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { createProduct, getProducts } from "../../services/productService";
 
