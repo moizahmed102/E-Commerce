@@ -1,4 +1,4 @@
-import Product from "../model/Product.js";
+import Product from "../model/product.js";
 import Category from "../model/Category.js";
 
 export const createProduct = async (req, res) => {
@@ -8,7 +8,7 @@ export const createProduct = async (req, res) => {
   try {
     const category = await Category.findById(categoryId);
     if (!category) {
-      return res.status(400).json({ message: "Category not found" });
+      return res.status(404).json({ message: "Category not found" });
     }
     const product = new Product({
       title,
@@ -25,11 +25,37 @@ export const createProduct = async (req, res) => {
   }
 };
 
-export const getAllProducts = async (req, res) => {
+export const getProducts = async (req, res) => {
   try {
-    const products = await Product.find();
-    res.json({ products });
+    const { category, minPrice, maxPrice, sort } = req.query;
+
+    let filter = {};
+    if (category) {
+      const categoryData = await Category.findOne({ name: category });
+      if (categoryData) {
+        filter.category = categoryData._id;
+      } else {
+        return res.status(404).json({ message: "Category not found" });
+      }
+    }
+    if (minPrice || maxPrice) {
+      filter.price = {};
+      if (minPrice) filter.price.$gte = minPrice;
+      if (maxPrice) filter.price.$lte = maxPrice;
+    }
+    let sortOption = {};
+    if (sort === "high") {
+      sortOption.price = -1;
+    } else if (sort === "low") {
+      sortOption.price = 1;
+    }
+
+    const products = await Product.find(filter)
+      .sort(sortOption)
+      .populate("category", "name");
+
+    res.status(200).json(products);
   } catch (error) {
-    res.status(500).json({ message: "Failed to retrieve products", error });
+    res.status(500).json({ error: "Failed to get products" });
   }
 };
