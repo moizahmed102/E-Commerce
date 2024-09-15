@@ -23,9 +23,10 @@ axiosInstance.interceptors.response.use(
   },
   (error) => {
     if (error.response) {
-      return Promise.reject(error.response.data);
+      const errorMessage = error.response.data?.message || "An error occurred";
+      return Promise.reject({ message: errorMessage });
     }
-    return Promise.reject(error);
+    return Promise.reject({ message: "Network error. Please try again." });
   }
 );
 

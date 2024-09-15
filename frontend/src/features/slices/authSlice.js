@@ -1,18 +1,15 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import {
-  signupUser,
-  loginUser,
-  getProfile,
-  logoutUser,
-} from "../../services/authService";
+import { signupUser, loginUser, getProfile } from "../../services/authService";
 
 export const signup = createAsyncThunk(
   "auth/signup",
   async (userData, thunkAPI) => {
     try {
-      return await signupUser(userData);
+      const response = await signupUser(userData);
+      thunkAPI.dispatch(getProfileAsync());
+      return response;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.response.data);
+      return thunkAPI.rejectWithValue(error.message || "Signup failed");
     }
   }
 );
@@ -21,9 +18,11 @@ export const login = createAsyncThunk(
   "auth/login",
   async (userData, thunkAPI) => {
     try {
-      return await loginUser(userData);
+      const response = await loginUser(userData);
+      thunkAPI.dispatch(getProfileAsync());
+      return response;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.response.data);
+      return thunkAPI.rejectWithValue(error.message || "Login failed");
     }
   }
 );
@@ -34,7 +33,9 @@ export const getProfileAsync = createAsyncThunk(
     try {
       return await getProfile();
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.response.data);
+      return thunkAPI.rejectWithValue(
+        error.message || "Fetching profile failed"
+      );
     }
   }
 );
@@ -53,7 +54,7 @@ const authSlice = createSlice({
       state.user = null;
       state.token = null;
       state.isAuthenticated = false;
-      logoutUser();
+      localStorage.removeItem("token");
     },
   },
   extraReducers: (builder) => {
@@ -68,6 +69,7 @@ const authSlice = createSlice({
           email: action.payload.email,
           role: action.payload.role,
         };
+        state.error = null;
       })
       .addCase(login.fulfilled, (state, action) => {
         state.token = action.payload.jwtauthtoken;
@@ -79,13 +81,20 @@ const authSlice = createSlice({
           email: action.payload.email,
           role: action.payload.role,
         };
+        state.error = null;
       })
       .addCase(getProfileAsync.fulfilled, (state, action) => {
         state.user = action.payload.user;
+        state.error = null;
+      })
+      .addCase(signup.rejected, (state, action) => {
+        state.error = action.payload || "Signup failed";
+      })
+      .addCase(login.rejected, (state, action) => {
+        state.error = action.payload || "Login failed";
       });
   },
 });
 
 export const { logout } = authSlice.actions;
-
 export default authSlice.reducer;

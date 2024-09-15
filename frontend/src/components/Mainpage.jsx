@@ -1,107 +1,186 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Typography, Button, Box, Grid2, Card, CardMedia, CardContent, Container, useTheme } from "@mui/material";
+import {
+  Typography,
+  Button,
+  Box,
+  Grid2,
+  Card,
+  CardMedia,
+  CardContent,
+  Container,
+  useTheme,
+  CircularProgress,
+  Alert,
+} from "@mui/material";
 import { Link } from "react-router-dom";
-import { fetchProducts } from "../features/slices/productSlice"; // Assuming you have this action in your productSlice
+import { fetchProducts } from "../features/slices/productSlice";
+import ProductModal from "./ProductModal";
 
 const MainPage = () => {
   const dispatch = useDispatch();
-  const { products } = useSelector((state) => state.products);
-  const theme = useTheme(); // Get the theme
+  const { products, loading, error } = useSelector((state) => state.products);
+  const theme = useTheme();
+
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
-    dispatch(fetchProducts()); // Fetch all products or filter based on the logic you prefer
+    dispatch(fetchProducts());
   }, [dispatch]);
 
-  const featuredProducts = products.slice(0, 4); // Use the first 4 products for the featured section
+  const featuredProducts = products.slice(0, 4);
+
+  if (loading) return <CircularProgress />;
+  if (error) return <Alert severity="error">{error}</Alert>;
+
+  const openModal = (product) => {
+    setSelectedProduct(product);
+    setModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalOpen(false);
+    setSelectedProduct(null);
+  };
 
   return (
-    <Container maxWidth="lg" sx={{ padding: 0, marginTop: 0 }}>
-      {/* Text and Image Section */}
-      <Box 
-        mb={5} 
-        sx={{ 
-          width: '100%', 
-          display: 'flex', 
-          flexDirection: { xs: 'column', md: 'row' }, 
-          alignItems: 'center', 
-          justifyContent: 'space-between',
-          backgroundColor: theme.palette.background.paper, // Use theme background color
-          borderRadius: '8px',
-          padding: 2, // Add padding around the content
-          color: theme.palette.text.primary, // Text color for better contrast
-          boxSizing: 'border-box' // Ensure padding and border are included in the element's total width and height
+    <Container
+      maxWidth="lg"
+      sx={{
+        padding: 0,
+        marginTop: 0,
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+      }}
+    >
+      <Box
+        mb={5}
+        sx={{
+          width: "100%",
+          display: "flex",
+          flexDirection: { xs: "column", md: "row" },
+          alignItems: "center",
+          justifyContent: "space-between",
+          backgroundColor: theme.palette.background.paper,
+          borderRadius: "8px",
+          padding: 2,
+          color: theme.palette.text.primary,
+          boxSizing: "border-box",
         }}
       >
-        <Box sx={{ flex: 1, paddingRight: { md: 2 }, textAlign: { xs: 'center', md: 'left' } }}>
-          <Typography variant="h4" gutterBottom>
-            “Perfume is like a new dress; it makes you quite simply marvelous.” – Estée Lauder
+        <Box
+          sx={{
+            flex: 1,
+            paddingRight: { md: 2 },
+            textAlign: { xs: "center", md: "left" },
+          }}
+        >
+          <Typography variant="h3" gutterBottom>
+            Enhance your fragrance journey with our finest perfumes.
           </Typography>
-          <Button variant="contained" color="primary" size="large" component={Link} to="/products">
+          <Typography variant="body1" sx={{ mb: 2 }}>
+            Discover our exclusive range of fragrances, designed to bring out
+            your inner charm.
+          </Typography>
+          <Button
+            variant="contained"
+            color="primary"
+            size="large"
+            component={Link}
+            to="/products"
+            sx={{
+              backgroundColor: theme.palette.primary.main,
+              "&:hover": { backgroundColor: theme.palette.primary.dark },
+            }}
+          >
             Explore Products
           </Button>
         </Box>
-        <Box sx={{ flex: 1, display: 'flex', justifyContent: 'center', paddingLeft: { md: 2 } }}>
-          <img 
-            src="/Img7.jpg" 
-            alt="Promotion" 
-            style={{ maxWidth: '100%', height: 'auto', borderRadius: '8px' }} // Max width set to 100% and auto height
+        <Box
+          sx={{
+            flex: 1,
+            display: "flex",
+            justifyContent: "center",
+            paddingLeft: { md: 2 },
+          }}
+        >
+          <img
+            src="/bg2.jpg"
+            alt="Promotion"
+            style={{
+              maxWidth: "100%",
+              height: "420px",
+              borderRadius: "8px",
+              objectFit: "cover",
+            }}
           />
         </Box>
       </Box>
 
-      {/* Promotion / Sale Section */}
-      <Box mb={5} textAlign="center" sx={{ backgroundColor: theme.palette.background.default, padding: '2rem', borderRadius: '8px' }}>
-        <Typography variant="h4" gutterBottom>
-          Big Sale! Up to 50% off on selected items
+      <Box sx={{ textAlign: "center", mb: 4 }}>
+        <Typography variant="h5" sx={{ color: theme.palette.primary.dark }}>
+          “Perfume is like a new dress; it makes you quite simply marvelous.” –
+          Estée Lauder
         </Typography>
-        <Button variant="contained" color="secondary" size="large" component={Link} to="/products">
-          Shop Now
-        </Button>
       </Box>
 
-      {/* Featured Products Section */}
       <Typography variant="h4" gutterBottom textAlign="center">
         Featured Products
       </Typography>
-      <Grid2 container spacing={4}>
+      <Grid2 container spacing={3} sx={{ flexGrow: 1 }}>
         {featuredProducts.map((product) => (
-          <Grid2 item xs={12} sm={6} md={3} key={product._id}>
+          <Grid2
+            item
+            xs={12}
+            sm={6}
+            md={3}
+            key={product._id}
+            sx={{ display: "flex" }}
+          >
             <Card
-              sx={{ 
-                boxShadow: 3, 
-                transition: '0.3s', 
-                '&:hover': { 
-                  boxShadow: 6, 
-                  transform: 'scale(1.05)' // Enlarge card on hover
-                }, 
-                cursor: 'pointer', 
-                height: '100%' // Ensure cards take up full height of the grid cell
+              sx={{
+                boxShadow: 3,
+                transition: "0.3s",
+                "&:hover": {
+                  boxShadow: 6,
+                  transform: "scale(1.05)",
+                  backgroundColor: theme.palette.background.default,
+                },
+                cursor: "pointer",
+                height: "100%",
+                width: "100%",
               }}
-              component={Link}
-              to={`/products/${product._id}`} // Link to product details page
+              onClick={() => openModal(product)}
             >
               <CardMedia
                 component="img"
-                height="200"
-                image={`http://localhost:4000${product.image}`} // Ensure the image path is correct
+                height="375px"
+                image={`http://localhost:4000${product.image}`}
                 alt={product.title}
               />
               <CardContent>
-                <Typography variant="h6" component="div">{product.title}</Typography>
-                <Typography variant="body1" color="primary">${product.price}</Typography>
+                <Typography variant="h6" component="div" noWrap>
+                  {product.title}
+                </Typography>
+                <Typography variant="body1" color="primary" noWrap>
+                  ${product.price}
+                </Typography>
               </CardContent>
             </Card>
           </Grid2>
         ))}
       </Grid2>
 
-      {/* Link to Products Page */}
-      <Box textAlign="center" mt={5}>
-        <Button variant="contained" color="primary" size="large" component={Link} to="/products">
-          View All Products
-        </Button>
-      </Box>
+      {selectedProduct && (
+        <ProductModal
+          product={selectedProduct}
+          open={modalOpen}
+          onClose={closeModal}
+        />
+      )}
     </Container>
   );
 };

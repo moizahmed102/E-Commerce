@@ -1,5 +1,6 @@
 import React from 'react'
 import Header from '../components/Header'
+import Footer from '../components/Footer'
 import ProductList from '../components/ProductList'
 
 function Home() {
@@ -7,6 +8,7 @@ function Home() {
     <>
       <Header />
       <ProductList />
+      <Footer />
       </>
   )
 }
