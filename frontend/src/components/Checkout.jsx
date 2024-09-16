@@ -11,6 +11,7 @@ const Checkout = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { cart, status, error } = useSelector((state) => state.cart);
+  const { isAuthenticated } = useSelector((state) => state.auth); 
   const [address, setAddress] = useState('');
   const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(false);
@@ -37,7 +38,17 @@ const Checkout = () => {
 
   const handleOrder = async () => {
     if (!validate()) return;
-    
+  
+    if (!isAuthenticated) {
+      toast.error('You must be logged in to place an order.');
+      return;
+    }
+  
+    if (cart?.orderItems.length === 0 || cart?.totalPrice <= 0) {
+      toast.error('Your cart is empty. Add items to your cart before placing an order.');
+      return;
+    }
+  
     setLoading(true);
     setOrderError(null);
     try {
@@ -45,13 +56,15 @@ const Checkout = () => {
       await dispatch(createOrderAsync(orderData)).unwrap();
       setOrderSuccessful(true);
       toast.success('We have received your order!', { autoClose: 3000 });
+  
+      dispatch(fetchCart());
     } catch (err) {
       setOrderError('Failed to create order');
     } finally {
       setLoading(false);
     }
   };
-
+  
   if (status === 'loading') return <CircularProgress sx={{ display: 'block', margin: '0 auto' }} />;
   if (status === 'failed') return <Alert severity="error">{error}</Alert>;
 

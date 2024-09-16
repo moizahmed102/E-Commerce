@@ -79,6 +79,7 @@ const Signup = () => {
           padding: 4,
           borderRadius: 2,
           boxShadow: 3,
+          mt: 3,
         }}
       >
         <Typography variant="h4" align="center" gutterBottom>

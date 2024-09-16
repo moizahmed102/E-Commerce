@@ -22,13 +22,13 @@ const CartItems = () => {
   const navigate = useNavigate();
 
   const { cart, status, error } = useSelector((state) => state.cart);
-  const { isAuthenticated } = useSelector((state) => state.auth);
+  const { token } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (token) {
       dispatch(fetchCart());
     }
-  }, [dispatch, isAuthenticated]);
+  }, [dispatch, token]);
 
   const handleRemove = (productId) => {
     dispatch(removeItemFromCart(productId));
@@ -52,7 +52,7 @@ const CartItems = () => {
         />
       </Box>
 
-      {!isAuthenticated ? (
+      {!token ? ( 
         <Box textAlign="center" mt={4} mb={4}>
           <Typography variant="h6" color="textSecondary">
             Please <Link to="/login">Login</Link> or{" "}

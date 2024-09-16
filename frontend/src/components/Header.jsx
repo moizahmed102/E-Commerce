@@ -1,17 +1,15 @@
-import {
-  AppBar,
-  Toolbar,
-  Button,
-  Box,
-  IconButton,
-  useTheme,
-} from "@mui/material";
+import React from "react";
+import { AppBar, Toolbar, Button, Box, IconButton, useTheme, Badge } from "@mui/material";
 import { Link } from "react-router-dom";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import { useSelector } from "react-redux";
 
 const Header = () => {
   const theme = useTheme();
+  const { cart } = useSelector((state) => state.cart);
+
+  const totalItems = cart?.orderItems?.reduce((sum, item) => sum + item.quantity, 0) ?? 0;
 
   return (
     <>
@@ -99,7 +97,9 @@ const Header = () => {
               to="/cart"
               sx={{ mx: 1 }}
             >
-              <ShoppingCartIcon sx={{ color: theme.palette.common.white }} />
+              <Badge badgeContent={totalItems || 0} color="secondary" showZero>
+                <ShoppingCartIcon sx={{ color: theme.palette.common.white }} />
+              </Badge>
             </IconButton>
 
             <IconButton
