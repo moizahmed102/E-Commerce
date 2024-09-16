@@ -45,7 +45,7 @@ const authSlice = createSlice({
   initialState: {
     user: null,
     token: localStorage.getItem("token") || null,
-    isAuthenticated: false,
+    isAuthenticated: !!localStorage.getItem("token"),
     loading: false,
     error: null,
   },
@@ -85,6 +85,7 @@ const authSlice = createSlice({
       })
       .addCase(getProfileAsync.fulfilled, (state, action) => {
         state.user = action.payload.user;
+        state.isAuthenticated = true;
         state.error = null;
       })
       .addCase(signup.rejected, (state, action) => {

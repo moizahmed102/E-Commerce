@@ -49,7 +49,17 @@ const cartSlice = createSlice({
         state.cart = action.payload;
       })
       .addCase(removeItemFromCart.fulfilled, (state, action) => {
-        state.cart = action.payload.cart;
+        const updatedOrderItems = state.cart.orderItems.filter(
+          (item) => item.product._id !== action.meta.arg
+        );
+
+        const updatedTotalPrice = action.payload.cart?.totalPrice || 0;
+
+        state.cart = {
+          ...state.cart,
+          orderItems: updatedOrderItems,
+          totalPrice: updatedOrderItems.length > 0 ? updatedTotalPrice : 0,
+        };
       });
   },
 });
