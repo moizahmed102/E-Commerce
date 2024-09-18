@@ -31,18 +31,28 @@ export const getProducts = async (req, res) => {
 
     let filter = {};
     if (category) {
-      const categoryData = await Category.findOne({ name: category });
-      if (categoryData) {
-        filter.category = categoryData._id;
+      if (category === "all") {
+        const categories = await Category.find({
+          name: { $in: ["Men", "Women", "Kids"] },
+        });
+        const categoryIds = categories.map((cat) => cat._id);
+        filter.category = { $in: categoryIds };
       } else {
-        return res.status(404).json({ message: "Category not found" });
+        const categoryData = await Category.findOne({ name: category });
+        if (categoryData) {
+          filter.category = categoryData._id;
+        } else {
+          return res.status(404).json({ message: "Category not found" });
+        }
       }
     }
+
     if (minPrice || maxPrice) {
       filter.price = {};
       if (minPrice) filter.price.$gte = minPrice;
       if (maxPrice) filter.price.$lte = maxPrice;
     }
+
     let sortOption = {};
     if (sort === "high") {
       sortOption.price = -1;
