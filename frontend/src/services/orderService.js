@@ -5,8 +5,8 @@ const createOrder = async (orderData) => {
   return response.data;
 };
 
-const fetchOrders = async () => {
-  const response = await axiosInstance.get("/order/all");
+const fetchOrders = async (userId) => {
+  const response = await axiosInstance.get(`/order/all?userId=${userId}`);
   return response.data;
 };
 

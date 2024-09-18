@@ -16,8 +16,12 @@ export const createOrderAsync = createAsyncThunk(
 export const getOrdersByUserAsync = createAsyncThunk(
   "order/getOrdersByUser",
   async (_, thunkAPI) => {
+    const userId = thunkAPI.getState().auth.user?.id; // Get user ID from auth state
+    if (!userId) {
+      return thunkAPI.rejectWithValue("User not authenticated");
+    }
     try {
-      const response = await fetchOrders();
+      const response = await fetchOrders(userId);
       return response;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response.data);
@@ -32,7 +36,11 @@ const orderSlice = createSlice({
     loading: false,
     error: null,
   },
-  reducers: {},
+  reducers: {
+    resetOrders: (state) => {
+      state.orders = [];
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(createOrderAsync.pending, (state) => {
@@ -60,4 +68,5 @@ const orderSlice = createSlice({
   },
 });
 
+export const { resetOrders } = orderSlice.actions;
 export default orderSlice.reducer;
