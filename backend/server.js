@@ -7,6 +7,8 @@ import productRoute from "./routes/product.js";
 import orderRoute from "./routes/order.js";
 import cartRoute from "./routes/cart.js";
 import categoryRoute from "./routes/category.js";
+import adminProductRoute from "./routes/adminProduct.js";
+import adminOrderRoute from "./routes/adminOrder.js";
 
 dotenv.config();
 const app = express();
@@ -29,6 +31,10 @@ app.use("/api/products", productRoute);
 app.use("/api/order", orderRoute);
 app.use("/api/cart", cartRoute);
 app.use("/api/categories", categoryRoute);
+
+app.use("/api/admin", adminProductRoute);
+app.use("/api/admin", adminOrderRoute);
+
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });

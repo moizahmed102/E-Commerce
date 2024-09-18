@@ -10,6 +10,8 @@ import Login from "./pages/Login";
 import Men from "./pages/Men";
 import Kids from "./pages/Kids";
 import Women from "./pages/Women";
+import AdminPanel from "./pages/AdminPanel";
+import AdminOrders from "./pages/AdminOrders";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -38,6 +40,8 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/admin" element={<AdminPanel />} />
+        <Route path="/admin-orders" element={<AdminOrders />} />
       </Routes>
     </Router>
   );
