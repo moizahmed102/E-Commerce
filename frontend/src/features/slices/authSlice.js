@@ -40,7 +40,6 @@ export const getProfileAsync = createAsyncThunk(
   }
 );
 
-// authSlice.js
 const authSlice = createSlice({
   name: "auth",
   initialState: {

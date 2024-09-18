@@ -1,59 +1,66 @@
-import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchCart } from '../features/slices/cartSlice';
-import { createOrderAsync } from '../features/slices/orderSlice'; 
-import { Container, TextField, Button, Box, Typography, List, ListItem, ListItemText, CircularProgress, Alert } from '@mui/material';
-import { ShoppingCart } from '@mui/icons-material';
-import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchCart } from "../features/slices/cartSlice";
+import { createOrderAsync } from "../features/slices/orderSlice";
+import {
+  Container,
+  TextField,
+  Button,
+  Box,
+  Typography,
+  List,
+  ListItem,
+  ListItemText,
+  CircularProgress,
+  Alert,
+} from "@mui/material";
+import { ShoppingCart } from "@mui/icons-material";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const Checkout = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  
-  // Select cart and auth states from Redux
+
   const { cart, status, error } = useSelector((state) => state.cart);
   const { isAuthenticated } = useSelector((state) => state.auth);
 
-  const [address, setAddress] = useState('');
-  const [phone, setPhone] = useState('');
+  const [address, setAddress] = useState("");
+  const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
   const [orderError, setOrderError] = useState(null);
   const [formErrors, setFormErrors] = useState({});
   const [orderSuccessful, setOrderSuccessful] = useState(false);
 
-  // Redirect to login if not authenticated
   useEffect(() => {
     if (!isAuthenticated) {
-      navigate('/login');
+      navigate("/login");
     } else {
       dispatch(fetchCart());
     }
   }, [isAuthenticated, dispatch, navigate]);
 
-  // Validate form inputs
   const validate = () => {
     let errors = {};
     const phoneRegex = /^03\d{9}$/;
-    if (!address) errors.address = 'Address is required';
+    if (!address) errors.address = "Address is required";
     if (!phone) {
-      errors.phone = 'Phone number is required';
+      errors.phone = "Phone number is required";
     } else if (!phoneRegex.test(phone)) {
-      errors.phone = 'Phone number must be in the format 03123456789';
+      errors.phone = "Phone number must be in the format 03123456789";
     }
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
 
-  // Handle order creation
   const handleOrder = async () => {
-    // Check if cart is empty
     if (!cart || cart.orderItems.length === 0) {
-      toast.error('Your cart is empty. Please add items to your cart before placing an order.');
+      toast.error(
+        "Your cart is empty. Please add items to your cart before placing an order."
+      );
       return;
     }
 
-    // Validate form inputs
     if (!validate()) return;
 
     setLoading(true);
@@ -62,31 +69,31 @@ const Checkout = () => {
       const orderData = { address, phone };
       await dispatch(createOrderAsync(orderData)).unwrap();
       setOrderSuccessful(true);
-      toast.success('We have received your order!', { autoClose: 3000 });
+      toast.success("We have received your order!", { autoClose: 3000 });
     } catch (err) {
-      setOrderError('Failed to create order');
+      setOrderError("Failed to create order");
     } finally {
       setLoading(false);
     }
   };
 
-  // Show loading state
-  if (status === 'loading') return <CircularProgress sx={{ display: 'block', margin: '0 auto' }} />;
-  
-  // Show error if cart loading fails
-  if (status === 'failed') return <Alert severity="error">{error}</Alert>;
+  if (status === "loading")
+    return <CircularProgress sx={{ display: "block", margin: "0 auto" }} />;
 
-  // Show thank you message after successful order
+  if (status === "failed") return <Alert severity="error">{error}</Alert>;
+
   if (orderSuccessful) {
     return (
       <Container maxWidth="md">
         <Box textAlign="center" mt={5}>
-          <Typography variant="h4" gutterBottom>Thank you for shopping with us!</Typography>
+          <Typography variant="h4" gutterBottom>
+            Thank you for shopping with us!
+          </Typography>
           <Button
             variant="contained"
             color="primary"
-            onClick={() => navigate('/products')}
-            sx={{ padding: '12px 24px', fontSize: '16px' }}
+            onClick={() => navigate("/products")}
+            sx={{ padding: "12px 24px", fontSize: "16px" }}
           >
             Continue Shopping
           </Button>
@@ -98,8 +105,10 @@ const Checkout = () => {
   return (
     <Container maxWidth="md">
       <Box textAlign="center" mb={3}>
-        <Typography variant="h4" gutterBottom>Checkout</Typography>
-        <ShoppingCart sx={{ fontSize: 40, color: 'primary.main', mt: 1 }} />
+        <Typography variant="h4" gutterBottom>
+          Checkout
+        </Typography>
+        <ShoppingCart sx={{ fontSize: 40, color: "primary.main", mt: 1 }} />
       </Box>
       <Box mt={2} mb={2}>
         <List>
@@ -113,7 +122,9 @@ const Checkout = () => {
           ))}
         </List>
         <Box mt={2}>
-          <Typography variant="h6" align="center">Total Price: ${cart?.totalPrice.toFixed(2)}</Typography>
+          <Typography variant="h6" align="center">
+            Total Price: ${cart?.totalPrice.toFixed(2)}
+          </Typography>
         </Box>
       </Box>
       <Box mt={3} mb={2} textAlign="center">
@@ -126,7 +137,7 @@ const Checkout = () => {
           onChange={(e) => setAddress(e.target.value)}
           error={!!formErrors.address}
           helperText={formErrors.address}
-          sx={{ maxWidth: '500px', margin: '0 auto', mb: 2 }}
+          sx={{ maxWidth: "500px", margin: "0 auto", mb: 2 }}
         />
         <TextField
           label="Phone"
@@ -137,20 +148,26 @@ const Checkout = () => {
           onChange={(e) => setPhone(e.target.value)}
           error={!!formErrors.phone}
           helperText={formErrors.phone}
-          sx={{ maxWidth: '500px', margin: '0 auto', mb: 2 }}
+          sx={{ maxWidth: "500px", margin: "0 auto", mb: 2 }}
         />
       </Box>
-      <Typography variant="body1" align="center" mt={2}>Payment Method: Cash on Delivery</Typography>
-      {orderError && <Alert severity="error" sx={{ mt: 2 }}>{orderError}</Alert>}
+      <Typography variant="body1" align="center" mt={2}>
+        Payment Method: Cash on Delivery
+      </Typography>
+      {orderError && (
+        <Alert severity="error" sx={{ mt: 2 }}>
+          {orderError}
+        </Alert>
+      )}
       <Box mt={4} textAlign="center">
         <Button
           variant="contained"
           color="primary"
           onClick={handleOrder}
           disabled={loading}
-          sx={{ padding: '12px 24px', fontSize: '16px' }}
+          sx={{ padding: "12px 24px", fontSize: "16px" }}
         >
-          {loading ? 'Processing...' : 'Order Now'}
+          {loading ? "Processing..." : "Order Now"}
         </Button>
       </Box>
     </Container>

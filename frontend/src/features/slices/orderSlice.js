@@ -16,7 +16,7 @@ export const createOrderAsync = createAsyncThunk(
 export const getOrdersByUserAsync = createAsyncThunk(
   "order/getOrdersByUser",
   async (_, thunkAPI) => {
-    const userId = thunkAPI.getState().auth.user?.id; // Get user ID from auth state
+    const userId = thunkAPI.getState().auth.user?.id;
     if (!userId) {
       return thunkAPI.rejectWithValue("User not authenticated");
     }

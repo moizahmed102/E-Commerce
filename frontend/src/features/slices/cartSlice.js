@@ -50,17 +50,15 @@ const cartSlice = createSlice({
       })
       .addCase(removeItemFromCart.fulfilled, (state, action) => {
         const updatedOrderItems = state.cart.orderItems.filter(
-          (item) => item.product._id !== action.meta.arg // Filter out the removed item
+          (item) => item.product._id !== action.meta.arg
         );
 
-        // Ensure safe handling of an empty cart
         const updatedTotalPrice = action.payload.cart?.totalPrice || 0;
 
-        // Update the state immutably
         state.cart = {
           ...state.cart,
           orderItems: updatedOrderItems.length > 0 ? updatedOrderItems : [],
-          totalPrice: updatedOrderItems.length > 0 ? updatedTotalPrice : 0, // Set to 0 if the cart is empty
+          totalPrice: updatedOrderItems.length > 0 ? updatedTotalPrice : 0,
         };
       });
   },

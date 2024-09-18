@@ -1,16 +1,34 @@
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { getProfileAsync, logout } from '../features/slices/authSlice';
-import { getOrdersByUserAsync, resetOrders } from '../features/slices/orderSlice';
-import { useNavigate } from 'react-router-dom';
-import { Button, Typography, Box, CircularProgress, Card, CardContent, List, ListItem, ListItemText } from '@mui/material';
-import { PersonOutline, Login, AppRegistration, Logout } from '@mui/icons-material';
-import { styled } from '@mui/system';
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getProfileAsync, logout } from "../features/slices/authSlice";
+import {
+  getOrdersByUserAsync,
+  resetOrders,
+} from "../features/slices/orderSlice";
+import { useNavigate } from "react-router-dom";
+import {
+  Button,
+  Typography,
+  Box,
+  CircularProgress,
+  Card,
+  CardContent,
+  List,
+  ListItem,
+  ListItemText,
+} from "@mui/material";
+import {
+  PersonOutline,
+  Login,
+  AppRegistration,
+  Logout,
+} from "@mui/icons-material";
+import { styled } from "@mui/system";
 
 const ProfileCard = styled(Card)(({ theme }) => ({
   boxShadow: theme.shadows[5],
   borderRadius: theme.shape.borderRadius,
-  overflow: 'hidden',
+  overflow: "hidden",
   marginBottom: theme.spacing(3),
 }));
 
@@ -24,27 +42,33 @@ const Profile = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { user, isAuthenticated, loading: authLoading } = useSelector((state) => state.auth);
-  const { orders, loading: ordersLoading } = useSelector((state) => state.orders);
+  const {
+    user,
+    isAuthenticated,
+    loading: authLoading,
+  } = useSelector((state) => state.auth);
+  const { orders, loading: ordersLoading } = useSelector(
+    (state) => state.orders
+  );
 
   useEffect(() => {
     if (isAuthenticated) {
       dispatch(getProfileAsync());
       dispatch(getOrdersByUserAsync());
     } else {
-      navigate('/login');
+      navigate("/login");
     }
   }, [dispatch, isAuthenticated, navigate]);
 
   const handleLogout = () => {
-    dispatch(logout()); // Clear user data from auth slice
-    dispatch(resetOrders()); // Clear orders from order slice
-    navigate('/'); // Redirect to home
+    dispatch(logout());
+    dispatch(resetOrders());
+    navigate("/");
   };
 
   if (authLoading || ordersLoading) {
     return (
-      <Box sx={{ textAlign: 'center', mt: 5 }}>
+      <Box sx={{ textAlign: "center", mt: 5 }}>
         <CircularProgress />
         <Typography variant="body1" sx={{ mt: 2 }}>
           Loading your profile and orders...
@@ -55,26 +79,26 @@ const Profile = () => {
 
   if (!user) {
     return (
-      <Box sx={{ textAlign: 'center', mt: 5 }}>
-        <PersonOutline sx={{ fontSize: 60, color: 'gray' }} /> 
+      <Box sx={{ textAlign: "center", mt: 5 }}>
+        <PersonOutline sx={{ fontSize: 60, color: "gray" }} />
         <Typography variant="h6" sx={{ mb: 2 }}>
           No user data found. Please log in or sign up.
         </Typography>
         <Button
           variant="contained"
           color="primary"
-          onClick={() => navigate('/login')}
+          onClick={() => navigate("/login")}
           sx={{ mt: 2, borderRadius: 20 }}
-          startIcon={<Login />} 
+          startIcon={<Login />}
         >
           Login
         </Button>
         <Button
           variant="outlined"
           color="primary"
-          onClick={() => navigate('/signup')}
+          onClick={() => navigate("/signup")}
           sx={{ mt: 2, ml: 2, borderRadius: 20 }}
-          startIcon={<AppRegistration />} 
+          startIcon={<AppRegistration />}
         >
           Sign Up
         </Button>
@@ -83,7 +107,7 @@ const Profile = () => {
   }
 
   return (
-    <Box sx={{ p: 2, maxWidth: 800, mx: 'auto' }}>
+    <Box sx={{ p: 2, maxWidth: 800, mx: "auto" }}>
       <ProfileCard>
         <CardContent>
           <Typography variant="h4" component="div" gutterBottom>
@@ -99,14 +123,20 @@ const Profile = () => {
         Order History
       </Typography>
       {orders.length === 0 ? (
-        <Typography variant="body1">You have not placed any orders yet.</Typography>
+        <Typography variant="body1">
+          You have not placed any orders yet.
+        </Typography>
       ) : (
         <List>
           {orders.map((order) => (
             <OrderListItem key={order._id}>
               <ListItemText
-                primary={`Order #${order._id} - Total: $${order.totalPrice.toFixed(2)}`}
-                secondary={`Status: ${order.status}, Placed on: ${new Date(order.order_date).toLocaleDateString()}`}
+                primary={`Order #${
+                  order._id
+                } - Total: $${order.totalPrice.toFixed(2)}`}
+                secondary={`Status: ${order.status}, Placed on: ${new Date(
+                  order.order_date
+                ).toLocaleDateString()}`}
               />
             </OrderListItem>
           ))}
@@ -118,7 +148,7 @@ const Profile = () => {
         variant="contained"
         color="primary"
         sx={{ mt: 3, borderRadius: 20 }}
-        startIcon={<Logout />} 
+        startIcon={<Logout />}
       >
         Logout
       </Button>

@@ -15,7 +15,7 @@ import {
   Divider,
 } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 
 const CartItems = () => {
   const dispatch = useDispatch();
@@ -25,7 +25,7 @@ const CartItems = () => {
   const { token, isAuthenticated } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    if (token) {  // Use token to check authentication and fetch cart
+    if (token) {
       dispatch(fetchCart());
     }
   }, [dispatch, token]);
@@ -34,8 +34,10 @@ const CartItems = () => {
     dispatch(removeItemFromCart(productId));
   };
 
-  if (status === "loading") return <CircularProgress sx={{ display: "block", margin: "0 auto" }} />;
-  if (status === "failed") return <Alert severity="error">{error || "An error occurred"}</Alert>;
+  if (status === "loading")
+    return <CircularProgress sx={{ display: "block", margin: "0 auto" }} />;
+  if (status === "failed")
+    return <Alert severity="error">{error || "An error occurred"}</Alert>;
 
   return (
     <Container>
@@ -44,11 +46,12 @@ const CartItems = () => {
       </Typography>
 
       <Box display="flex" justifyContent="center" mb={2}>
-        <ShoppingCartIcon 
-          sx={{ 
-            fontSize: (cart && cart.orderItems && cart.orderItems.length === 0) ? 80 : 40, 
-            color: 'primary.main' 
-          }} 
+        <ShoppingCartIcon
+          sx={{
+            fontSize:
+              cart && cart.orderItems && cart.orderItems.length === 0 ? 80 : 40,
+            color: "primary.main",
+          }}
         />
       </Box>
 
@@ -56,14 +59,16 @@ const CartItems = () => {
         <Box textAlign="center" mt={4} mb={4}>
           <Typography variant="h6" color="textSecondary">
             Please <Link to="/login">Login</Link> or{" "}
-            <Link to="/signup">Signup</Link> to view your cart and proceed to checkout.
+            <Link to="/signup">Signup</Link> to view your cart and proceed to
+            checkout.
           </Typography>
         </Box>
       ) : (
         <>
           {!cart || (cart && cart.orderItems.length === 0) ? (
             <Typography variant="h6" align="center">
-              Your Cart is empty, add items to your cart to view them here and checkout.
+              Your Cart is empty, add items to your cart to view them here and
+              checkout.
             </Typography>
           ) : (
             <Paper elevation={3} sx={{ padding: 3 }}>
