@@ -22,13 +22,13 @@ const CartItems = () => {
   const navigate = useNavigate();
 
   const { cart, status, error } = useSelector((state) => state.cart);
-  const { isAuthenticated } = useSelector((state) => state.auth);
+  const { token, isAuthenticated } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (token) {  // Use token to check authentication and fetch cart
       dispatch(fetchCart());
     }
-  }, [dispatch, isAuthenticated]);
+  }, [dispatch, token]);
 
   const handleRemove = (productId) => {
     dispatch(removeItemFromCart(productId));

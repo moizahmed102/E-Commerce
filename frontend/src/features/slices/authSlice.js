@@ -44,8 +44,8 @@ const authSlice = createSlice({
   name: "auth",
   initialState: {
     user: null,
-    token: localStorage.getItem("token") || null,
-    isAuthenticated: false,
+    token: localStorage.getItem("token") || null, // Check token from localStorage
+    isAuthenticated: !!localStorage.getItem("token"), // Set isAuthenticated based on token presence
     loading: false,
     error: null,
   },
@@ -54,14 +54,14 @@ const authSlice = createSlice({
       state.user = null;
       state.token = null;
       state.isAuthenticated = false;
-      localStorage.removeItem("token");
+      localStorage.removeItem("token"); // Clear token on logout
     },
   },
   extraReducers: (builder) => {
     builder
       .addCase(signup.fulfilled, (state, action) => {
         state.token = action.payload.jwtauthtoken;
-        localStorage.setItem("token", action.payload.jwtauthtoken);
+        localStorage.setItem("token", action.payload.jwtauthtoken); // Store token in localStorage
         state.isAuthenticated = true;
         state.user = {
           id: action.payload.id,
@@ -73,7 +73,7 @@ const authSlice = createSlice({
       })
       .addCase(login.fulfilled, (state, action) => {
         state.token = action.payload.jwtauthtoken;
-        localStorage.setItem("token", action.payload.jwtauthtoken);
+        localStorage.setItem("token", action.payload.jwtauthtoken); // Store token in localStorage
         state.isAuthenticated = true;
         state.user = {
           id: action.payload.id,
@@ -85,6 +85,7 @@ const authSlice = createSlice({
       })
       .addCase(getProfileAsync.fulfilled, (state, action) => {
         state.user = action.payload.user;
+        state.isAuthenticated = true; // Ensure user stays authenticated when fetching profile
         state.error = null;
       })
       .addCase(signup.rejected, (state, action) => {

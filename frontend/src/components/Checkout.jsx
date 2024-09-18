@@ -10,7 +10,11 @@ import { useNavigate } from 'react-router-dom';
 const Checkout = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  
+  // Select cart and auth states from Redux
   const { cart, status, error } = useSelector((state) => state.cart);
+  const { isAuthenticated } = useSelector((state) => state.auth);
+
   const [address, setAddress] = useState('');
   const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(false);
@@ -18,13 +22,19 @@ const Checkout = () => {
   const [formErrors, setFormErrors] = useState({});
   const [orderSuccessful, setOrderSuccessful] = useState(false);
 
+  // Redirect to login if not authenticated
   useEffect(() => {
-    dispatch(fetchCart());
-  }, [dispatch]);
+    if (!isAuthenticated) {
+      navigate('/login');
+    } else {
+      dispatch(fetchCart());
+    }
+  }, [isAuthenticated, dispatch, navigate]);
 
+  // Validate form inputs
   const validate = () => {
     let errors = {};
-    const phoneRegex = /^03\d{9}$/; 
+    const phoneRegex = /^03\d{9}$/;
     if (!address) errors.address = 'Address is required';
     if (!phone) {
       errors.phone = 'Phone number is required';
@@ -35,9 +45,17 @@ const Checkout = () => {
     return Object.keys(errors).length === 0;
   };
 
+  // Handle order creation
   const handleOrder = async () => {
+    // Check if cart is empty
+    if (!cart || cart.orderItems.length === 0) {
+      toast.error('Your cart is empty. Please add items to your cart before placing an order.');
+      return;
+    }
+
+    // Validate form inputs
     if (!validate()) return;
-    
+
     setLoading(true);
     setOrderError(null);
     try {
@@ -52,9 +70,13 @@ const Checkout = () => {
     }
   };
 
+  // Show loading state
   if (status === 'loading') return <CircularProgress sx={{ display: 'block', margin: '0 auto' }} />;
+  
+  // Show error if cart loading fails
   if (status === 'failed') return <Alert severity="error">{error}</Alert>;
 
+  // Show thank you message after successful order
   if (orderSuccessful) {
     return (
       <Container maxWidth="md">
