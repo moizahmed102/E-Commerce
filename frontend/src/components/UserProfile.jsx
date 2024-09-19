@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getProfileAsync, logout } from '../features/slices/authSlice';
+import { resetCart } from "../features/slices/cartSlice";
 import { getOrdersByUserAsync, resetOrders } from '../features/slices/orderSlice';
 import { useNavigate } from 'react-router-dom';
 import { Button, Typography, Box, CircularProgress, Card, CardContent, List, ListItem, ListItemText, Divider, Collapse } from '@mui/material';
@@ -51,6 +52,7 @@ const Profile = () => {
   const handleLogout = () => {
     dispatch(resetOrders());
     dispatch(logout());
+    dispatch(resetCart());
     navigate('/');
   };
 

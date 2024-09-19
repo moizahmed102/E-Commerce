@@ -9,7 +9,7 @@ import {
   Box,
   Link,
 } from "@mui/material";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const Login = () => {
@@ -17,10 +17,7 @@ const Login = () => {
   const [errors, setErrors] = useState({});
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const location = useLocation();
-  const { isAuthenticated, error } = useSelector((state) => state.auth);
-
-  const redirectPath = location.state?.from?.pathname || "/profile";
+  const { isAuthenticated, error, user } = useSelector((state) => state.auth);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -51,9 +48,14 @@ const Login = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate(redirectPath, { replace: true });
+      if (user.role === "admin") {
+        navigate("/admin", { replace: true });
+      } else {
+        navigate("/", { replace: true });
+      }
     }
-  }, [isAuthenticated, navigate, redirectPath]);
+  }, [isAuthenticated, user, navigate]);
+  
 
   useEffect(() => {
     if (error) {
