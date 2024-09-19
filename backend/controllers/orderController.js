@@ -34,10 +34,9 @@ export const getOrders = async (req, res) => {
   const userId = req.user.id;
 
   try {
-    const orders = await Order.find({ user: userId }).populate(
-      "orderItems.product",
-      "title price"
-    );
+    const orders = await Order.find({ user: userId })
+      .populate("orderItems.product", "title price")
+      .sort({ order_date: -1 });
     if (!orders || orders.length === 0) {
       return res.status(404).json({ message: "No orders found" });
     }

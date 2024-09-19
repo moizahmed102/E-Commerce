@@ -4,6 +4,8 @@ import {
   createProduct,
   getProducts,
 } from "../controllers/productController.js";
+import authMiddleware from "../middleware/authMiddleware.js";
+import adminMiddleware from "../middleware/adminMiddleware.js";
 
 const router = express.Router();
 
@@ -18,7 +20,13 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-router.post("/", upload.single("image"), createProduct);
+router.post(
+  "/",
+  authMiddleware,
+  adminMiddleware,
+  upload.single("image"),
+  createProduct
+);
 
 router.get("/", getProducts);
 

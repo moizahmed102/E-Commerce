@@ -1,64 +1,42 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import {
-  createProduct,
-  updateProduct,
-  deleteProduct,
-  getProducts,
   getAllOrders,
-} from "../../services/adminService";
+  updateOrderStatus,
+  deleteOrder,
+} from "../../services/adminOrders";
 
-export const fetchProducts = createAsyncThunk(
-  "admin/fetchProducts",
-  async (filters, thunkAPI) => {
+export const fetchOrders = createAsyncThunk(
+  "admin/fetchOrders",
+  async (_, { rejectWithValue }) => {
     try {
-      const data = await getProducts(filters);
-      return data;
+      const orders = await getAllOrders();
+      return orders;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.message);
+      return rejectWithValue(error.message);
     }
   }
 );
 
-export const fetchAllOrders = createAsyncThunk(
-  "admin/fetchAllOrders",
-  async () => {
-    const orders = await getAllOrders();
-    return orders;
-  }
-);
-
-export const addProduct = createAsyncThunk(
-  "admin/addProduct",
-  async (productData, thunkAPI) => {
+export const changeOrderStatus = createAsyncThunk(
+  "admin/changeOrderStatus",
+  async ({ orderId, status }, { rejectWithValue }) => {
     try {
-      const data = await createProduct(productData);
-      return data;
+      const updatedOrder = await updateOrderStatus(orderId, status);
+      return updatedOrder;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.message);
+      return rejectWithValue(error.message);
     }
   }
 );
 
-export const modifyProduct = createAsyncThunk(
-  "admin/modifyProduct",
-  async ({ productId, productData }, thunkAPI) => {
+export const removeOrder = createAsyncThunk(
+  "admin/removeOrder",
+  async (orderId, { rejectWithValue }) => {
     try {
-      const data = await updateProduct(productId, productData);
-      return data;
+      await deleteOrder(orderId);
+      return orderId;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.message);
-    }
-  }
-);
-
-export const removeProduct = createAsyncThunk(
-  "admin/removeProduct",
-  async (productId, thunkAPI) => {
-    try {
-      const data = await deleteProduct(productId);
-      return data;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(error.message);
+      return rejectWithValue(error.message);
     }
   }
 );
@@ -66,7 +44,6 @@ export const removeProduct = createAsyncThunk(
 const adminSlice = createSlice({
   name: "admin",
   initialState: {
-    products: [],
     orders: [],
     loading: false,
     error: null,
@@ -74,71 +51,50 @@ const adminSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchProducts.pending, (state) => {
+      .addCase(fetchOrders.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchProducts.fulfilled, (state, action) => {
-        state.products = action.payload;
+      .addCase(fetchOrders.fulfilled, (state, action) => {
         state.loading = false;
+        state.orders = action.payload;
       })
-      .addCase(fetchProducts.rejected, (state, action) => {
+      .addCase(fetchOrders.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      })
-      .addCase(addProduct.pending, (state) => {
+      });
+
+    builder
+      .addCase(changeOrderStatus.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(addProduct.fulfilled, (state, action) => {
-        state.products.push(action.payload.product);
+      .addCase(changeOrderStatus.fulfilled, (state, action) => {
         state.loading = false;
-      })
-      .addCase(addProduct.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
-      .addCase(modifyProduct.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(modifyProduct.fulfilled, (state, action) => {
-        const index = state.products.findIndex(
-          (p) => p._id === action.payload.product._id
+        const updatedOrder = action.payload;
+        state.orders = state.orders.map((order) =>
+          order._id === updatedOrder._id ? updatedOrder : order
         );
-        if (index !== -1) {
-          state.products[index] = action.payload.product;
-        }
-        state.loading = false;
       })
-      .addCase(modifyProduct.rejected, (state, action) => {
+      .addCase(changeOrderStatus.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      })
-      .addCase(removeProduct.pending, (state) => {
+      });
+
+    builder
+      .addCase(removeOrder.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(removeProduct.fulfilled, (state, action) => {
-        state.products = state.products.filter(
-          (p) => p._id !== action.payload.productId
-        );
+      .addCase(removeOrder.fulfilled, (state, action) => {
         state.loading = false;
+        state.orders = state.orders.filter(
+          (order) => order._id !== action.payload
+        );
       })
-      .addCase(removeProduct.rejected, (state, action) => {
+      .addCase(removeOrder.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      })
-      .addCase(fetchAllOrders.pending, (state) => {
-        state.status = "loading";
-      })
-      .addCase(fetchAllOrders.fulfilled, (state, action) => {
-        state.status = "succeeded";
-        state.orders = action.payload || []; // Ensure orders are updated
-      })
-      .addCase(fetchAllOrders.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.error.message;
       });
   },
 });
