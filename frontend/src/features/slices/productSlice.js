@@ -1,5 +1,10 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { createProduct, getProducts } from "../../services/productService";
+import {
+  createProduct,
+  getProducts,
+  updateProduct,
+  deleteProduct,
+} from "../../services/productService";
 
 export const fetchProducts = createAsyncThunk(
   "products/fetchProducts",
@@ -7,7 +12,11 @@ export const fetchProducts = createAsyncThunk(
     try {
       return await getProducts(queryParams);
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.response?.data || error.message);
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to fetch products";
+      return thunkAPI.rejectWithValue(message);
     }
   }
 );
@@ -18,7 +27,41 @@ export const addProduct = createAsyncThunk(
     try {
       return await createProduct(productData);
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.response?.data || error.message);
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to add product";
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+export const editProduct = createAsyncThunk(
+  "products/editProduct",
+  async ({ productId, productData }, thunkAPI) => {
+    try {
+      return await updateProduct(productId, productData);
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to update product";
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+export const removeProduct = createAsyncThunk(
+  "products/removeProduct",
+  async (productId, thunkAPI) => {
+    try {
+      return await deleteProduct(productId);
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to delete product";
+      return thunkAPI.rejectWithValue(message);
     }
   }
 );
@@ -50,7 +93,6 @@ const productSlice = createSlice({
           state.totalProducts = 0;
         }
       })
-
       .addCase(fetchProducts.rejected, (state, action) => {
         state.error = action.payload;
         state.loading = false;
@@ -65,6 +107,19 @@ const productSlice = createSlice({
       .addCase(addProduct.rejected, (state, action) => {
         state.error = action.payload;
         state.loading = false;
+      })
+      .addCase(editProduct.fulfilled, (state, action) => {
+        const index = state.products.findIndex(
+          (product) => product._id === action.payload.product._id
+        );
+        if (index !== -1) {
+          state.products[index] = action.payload.product;
+        }
+      })
+      .addCase(removeProduct.fulfilled, (state, action) => {
+        state.products = state.products.filter(
+          (product) => product._id !== action.payload.product._id
+        );
       });
   },
 });

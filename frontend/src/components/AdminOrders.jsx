@@ -14,6 +14,7 @@ import {
   TableRow,
   Paper,
   Typography,
+  Box,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { toast } from "react-toastify";
@@ -53,9 +54,9 @@ const AdminOrders = () => {
   if (error) return <Typography variant="h6" color="error">{error}</Typography>;
 
   return (
-    <div className="admin-orders-container">
-      <Typography variant="h4" gutterBottom>
-        All Orders
+    <Box sx={{ padding: 3, backgroundColor: '#f4f5f7' }}>
+      <Typography variant="h4" align="center" sx={{ marginBottom: 4 }}>
+        Admin Order Management
       </Typography>
       {orders.length === 0 ? (
         <Typography>No orders found</Typography>
@@ -117,7 +118,7 @@ const AdminOrders = () => {
           </Table>
         </TableContainer>
       )}
-    </div>
+    </Box>
   );
 };
 

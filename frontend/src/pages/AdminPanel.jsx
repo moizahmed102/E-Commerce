@@ -10,15 +10,9 @@ const AdminPanel = () => {
         Admin Panel
       </Typography>
       <Paper elevation={3} sx={{ padding: 3, marginBottom: 4 }}>
-        <Typography variant="h5" gutterBottom>
-          Manage Orders
-        </Typography>
         <AdminOrders />
       </Paper>
       <Paper elevation={3} sx={{ padding: 3 }}>
-        <Typography variant="h5" gutterBottom>
-          Add New Product
-        </Typography>
         <ProductForm />
       </Paper>
     </Container>
