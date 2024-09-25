@@ -14,6 +14,7 @@ import {
   ListItemText,
   CircularProgress,
   Alert,
+  CardMedia
   } from "@mui/material";
 import { ShoppingCart } from "@mui/icons-material";
 import { toast } from "react-toastify";
@@ -119,7 +120,13 @@ const Checkout = () => {
       <Paper elevation={3} sx={{ padding: 3, mb: 4 }}>
         <List>
           {cart?.orderItems.map((item) => (
-            <ListItem key={item.product._id} sx={{ borderBottom: "1px solid #ddd" }}>
+            <ListItem key={item.product._id} sx={{ borderBottom: "1px solid #ddd", display: "flex", alignItems: "center" }}>
+              <CardMedia
+                component="img"
+                sx={{ width: 100, height: 100, objectFit: "cover", marginRight: 2 }}
+                image={`http://localhost:4000${item.product.image}`}
+                alt={item.product.title}
+              />
               <ListItemText
                 primary={item.product.title}
                 secondary={`Quantity: ${item.quantity} - $${item.product.price.toFixed(2)}`}

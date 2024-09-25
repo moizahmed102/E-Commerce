@@ -226,6 +226,7 @@ const ProductForm = () => {
             <CardContent>
               <Typography variant="h6">{product.title}</Typography>
               <Typography>{product.description}</Typography>
+              <Typography>{`Category: ${product.category.name}`}</Typography>
               <Typography>{`Price: $${product.price}`}</Typography>
               <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
                 <IconButton color="primary" onClick={() => handleEdit(product)}>

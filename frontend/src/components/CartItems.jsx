@@ -13,6 +13,7 @@ import {
   Alert,
   Paper,
   Divider,
+  CardMedia,
 } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
@@ -55,7 +56,7 @@ const CartItems = () => {
       </Box>
 
       {!isAuthenticated ? (
-        <Box textAlign="center"  mb={10} mt={10}>
+        <Box textAlign="center" mb={10} mt={10}>
           <Typography variant="h6" color="textSecondary">
             Please <Link to="/login">Login</Link> or{" "}
             <Link to="/signup">Signup</Link> to view your cart and proceed to checkout.
@@ -82,6 +83,12 @@ const CartItems = () => {
                         borderBottom: "1px solid #ddd",
                       }}
                     >
+                      <CardMedia
+                        component="img"
+                        sx={{ width: 100, height: 100, objectFit: "cover", marginRight: 2 }}
+                        image={`http://localhost:4000${item.product.image}`}
+                        alt={item.product.title}
+                      />
                       <ListItemText
                         primary={item.product.title}
                         secondary={`Quantity: ${item.quantity} - $${item.product.price ? item.product.price.toFixed(2) : '0.00'}`}

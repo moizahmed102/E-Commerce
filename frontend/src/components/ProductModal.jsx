@@ -21,7 +21,7 @@ const ProductModal = ({ product, open, onClose }) => {
 
   const handleAddToCart = async () => {
     if (!isAuthenticated) {
-      toast.info("Please log in to add items to the cart.");
+      toast.info("Please login or signup from profile to add items to the cart.",  { autoClose: 2500 });
       return;
     }
 
