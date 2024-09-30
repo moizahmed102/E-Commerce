@@ -91,7 +91,7 @@ const CartItems = () => {
                       />
                       <ListItemText
                         primary={item.product.title}
-                        secondary={`Quantity: ${item.quantity} - $${item.product.price ? item.product.price.toFixed(2) : '0.00'}`}
+                        secondary={`Quantity: ${item.quantity} - Unit Price: $${item.product.price ? item.product.price.toFixed(2) : '0.00'}`}
                       />
                       <Button
                         variant="outlined"

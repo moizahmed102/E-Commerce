@@ -123,7 +123,7 @@ const Profile = () => {
           <OrderCard key={order._id}>
             <OrderHeader>
               <Typography variant="h6">
-                Order #{order._id}
+                Order #{order._id.slice(0, 8)}
               </Typography>
               <Button onClick={() => handleToggleOrderDetails(order._id)}>
                 {openOrderId === order._id ? <ExpandLess /> : <ExpandMore />}
@@ -145,15 +145,16 @@ const Profile = () => {
                   <strong>Items:</strong>
                 </Typography>
                 <List>
-                  {order.orderItems.map((item) => (
-                    <OrderListItem key={item._id}>
-                      <ListItemText
-                        primary={`Product: ${item.product.title}`}
-                        secondary={`Quantity: ${item.quantity}`}
-                      />
-                    </OrderListItem>
-                  ))}
-                </List>
+  {order.orderItems.map((item) => (
+    <OrderListItem key={item._id}>
+      <ListItemText
+        primary={`Product: ${item.product ? item.product.title : 'Product not found'}`}
+        secondary={`Quantity: ${item.quantity}`}
+      />
+    </OrderListItem>
+  ))}
+</List>
+
               </OrderDetails>
             </Collapse>
           </OrderCard>

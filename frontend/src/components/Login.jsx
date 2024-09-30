@@ -47,7 +47,7 @@ const Login = () => {
   };
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && user) {
       if (user.role === "admin") {
         navigate("/admin", { replace: true });
       } else {

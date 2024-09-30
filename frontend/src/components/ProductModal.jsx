@@ -11,17 +11,20 @@ import {
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { addItemToCart } from "../features/slices/cartSlice";
+import { useNavigate } from "react-router-dom"
 import CloseIcon from "@mui/icons-material/Close";
 import { toast } from "react-toastify";
 
 const ProductModal = ({ product, open, onClose }) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate()
   const [quantity, setQuantity] = useState(1);
   const { isAuthenticated } = useSelector((state) => state.auth);
 
   const handleAddToCart = async () => {
     if (!isAuthenticated) {
-      toast.info("Please login or signup from profile to add items to the cart.",  { autoClose: 2500 });
+      toast.info("Please login or signup to add items to the cart.",  { autoClose: 2500 });
+      navigate("/signup");
       return;
     }
 

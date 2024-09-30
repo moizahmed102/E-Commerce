@@ -46,6 +46,8 @@ const ProductList = ({ category }) => {
     setSelectedProduct(null);
   };
 
+  const sortedProducts = [...products].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
   return (
     <Container>
       <Box mb={2} display="flex" justifyContent="flex-end" mr={3} mt={2}>
@@ -73,7 +75,7 @@ const ProductList = ({ category }) => {
       </Box>
 
       <Grid2 container spacing={3}>
-        {products.map((product) => (
+        {sortedProducts.map((product) => (
           <Grid2 item xs={12} sm={6} md={4} key={product._id}>
             <Card
               sx={{

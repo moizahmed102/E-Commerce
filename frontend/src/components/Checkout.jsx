@@ -129,7 +129,7 @@ const Checkout = () => {
               />
               <ListItemText
                 primary={item.product.title}
-                secondary={`Quantity: ${item.quantity} - $${item.product.price.toFixed(2)}`}
+                secondary={`Quantity: ${item.quantity} - Unit Price: $${item.product.price.toFixed(2)}`}
               />
             </ListItem>
           ))}

@@ -25,7 +25,7 @@ const Signup = () => {
   const location = useLocation();
   const { isAuthenticated, error } = useSelector((state) => state.auth);
 
-  const redirectPath = location.state?.from?.pathname || "/profile";
+  const redirectPath = location.state?.from?.pathname || "/products";
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -34,25 +34,30 @@ const Signup = () => {
   const validate = () => {
     let tempErrors = {};
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
+    const nameRegex = /^[a-zA-Z\s]+$/;
+  
     if (!formData.name) tempErrors.name = "Name is required";
+    else if (!nameRegex.test(formData.name)) tempErrors.name = "Name must contain only letters";
+    
     if (!formData.email) tempErrors.email = "Email is required";
     else if (!emailRegex.test(formData.email)) tempErrors.email = "Invalid email format";
+    
     if (!formData.password) tempErrors.password = "Password is required";
     else if (formData.password.length < 6) tempErrors.password = "Password must be at least 6 characters";
+    
     if (formData.password !== formData.confirmPassword)
       tempErrors.confirmPassword = "Passwords do not match";
       
     setErrors(tempErrors);
     return Object.keys(tempErrors).length === 0;
-  };
+  };  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
     try {
       await dispatch(signup(formData)).unwrap();
-      toast.success("Signup successful!", { autoClose: 2000 });
+      toast.success("Signup successful!");
     } catch (err) {
     }
   };
@@ -65,7 +70,7 @@ const Signup = () => {
 
   useEffect(() => {
     if (error) {
-      toast.error(error, { autoClose: 2000 });
+      toast.error(error);
     }
   }, [error]);
 
