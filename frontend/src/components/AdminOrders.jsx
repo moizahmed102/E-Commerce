@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchOrders, changeOrderStatus, removeOrder } from "../features/slices/adminSlice";
+import { fetchOrders, changeOrderStatus } from "../features/slices/adminSlice";
 import {
   CircularProgress,
   Select,
   MenuItem,
-  IconButton,
   Table,
   TableBody,
   TableCell,
@@ -15,25 +14,19 @@ import {
   Paper,
   Typography,
   Box,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
   Button,
   Card,
   CardContent,
+  TextField,
 } from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
 import { toast } from "react-toastify";
 
 const AdminOrders = () => {
   const dispatch = useDispatch();
   const { orders, loading, error } = useSelector((state) => state.admin);
   const [updatingOrderId, setUpdatingOrderId] = useState(null);
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [orderToDelete, setOrderToDelete] = useState(null);
   const [showOrdersTable, setShowOrdersTable] = useState(false); 
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     dispatch(fetchOrders());
@@ -54,30 +47,6 @@ const AdminOrders = () => {
       });
   };
 
-  const handleOpenDeleteDialog = (orderId) => {
-    setOrderToDelete(orderId);
-    setDeleteDialogOpen(true);
-  };
-
-  const handleCloseDeleteDialog = () => {
-    setDeleteDialogOpen(false);
-    setOrderToDelete(null);
-  };
-
-  const handleDeleteOrder = () => {
-    if (orderToDelete) {
-      dispatch(removeOrder(orderToDelete))
-        .unwrap()
-        .then(() => {
-          toast.success("Order deleted");
-          handleCloseDeleteDialog();
-        })
-        .catch((error) => {
-          toast.error(error.message || "Failed to delete order");
-          handleCloseDeleteDialog();
-        });
-    }
-  };
 
   const handleShowOrders = () => {
     setShowOrdersTable(true);
@@ -86,6 +55,10 @@ const AdminOrders = () => {
   const handleCloseOrdersTable = () => {
     setShowOrdersTable(false);
   };
+
+  const filteredOrders = orders.filter((order) => 
+    order._id.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   if (loading) return <CircularProgress />;
   if (error) return <Typography variant="h6" color="error">{error}</Typography>;
@@ -109,7 +82,16 @@ const AdminOrders = () => {
         </Card>
       ) : (
         <>
-          {orders.length === 0 ? (
+          <TextField
+            label="Search by Order ID"
+            variant="outlined"
+            fullWidth
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            sx={{ marginBottom: 2 }}
+          />
+
+          {filteredOrders.length === 0 ? (
             <Typography>No orders found</Typography>
           ) : (
             <>
@@ -123,11 +105,10 @@ const AdminOrders = () => {
                       <TableCell><Typography variant="subtitle1">Products</Typography></TableCell>
                       <TableCell><Typography variant="subtitle1">Total Price</Typography></TableCell>
                       <TableCell><Typography variant="subtitle1">Status</Typography></TableCell>
-                      <TableCell><Typography variant="subtitle1">Actions</Typography></TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {orders.map((order) => (
+                    {filteredOrders.map((order) => (
                       <TableRow key={order._id}>
                         <TableCell>{order._id.slice(0, 8)}</TableCell>
                         <TableCell>{order.user ? order.user.name || "Unknown User" : "Unknown User"}</TableCell>
@@ -158,14 +139,7 @@ const AdminOrders = () => {
                             </Select>
                           )}
                         </TableCell>
-                        <TableCell>
-                          <IconButton
-                            aria-label="delete"
-                            onClick={() => handleOpenDeleteDialog(order._id)}
-                          >
-                            <DeleteIcon />
-                          </IconButton>
-                        </TableCell>
+                      
                       </TableRow>
                     ))}
                   </TableBody>
@@ -177,26 +151,6 @@ const AdminOrders = () => {
               </Button>
             </>
           )}
-
-          <Dialog
-            open={deleteDialogOpen}
-            onClose={handleCloseDeleteDialog}
-          >
-            <DialogTitle>Confirm Delete</DialogTitle>
-            <DialogContent>
-              <DialogContentText>
-                Are you sure you want to delete this order? This action cannot be undone.
-              </DialogContentText>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={handleCloseDeleteDialog} color="primary">
-                Cancel
-              </Button>
-              <Button onClick={handleDeleteOrder} color="primary">
-                Delete
-              </Button>
-            </DialogActions>
-          </Dialog>
         </>
       )}
     </Box>

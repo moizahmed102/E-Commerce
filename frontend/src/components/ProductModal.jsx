@@ -11,19 +11,19 @@ import {
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { addItemToCart } from "../features/slices/cartSlice";
-import { useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom";
 import CloseIcon from "@mui/icons-material/Close";
 import { toast } from "react-toastify";
 
 const ProductModal = ({ product, open, onClose }) => {
   const dispatch = useDispatch();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [quantity, setQuantity] = useState(1);
   const { isAuthenticated } = useSelector((state) => state.auth);
 
   const handleAddToCart = async () => {
     if (!isAuthenticated) {
-      toast.info("Please login or signup to add items to the cart.",  { autoClose: 2500 });
+      toast.info("Please login or signup to add items to the cart.", { autoClose: 2500 });
       navigate("/signup");
       return;
     }
@@ -56,7 +56,7 @@ const ProductModal = ({ product, open, onClose }) => {
           bgcolor: "background.paper",
           borderRadius: 2,
           boxShadow: 24,
-          p: 4,
+          p: 3,
           display: "flex",
           flexDirection: "column",
         }}
@@ -100,11 +100,14 @@ const ProductModal = ({ product, open, onClose }) => {
             >
               {product.description}
             </Typography>
-            <Typography variant="body2" color="textSecondary" gutterBottom>
+            <Typography variant="body1" color="textPrimary" gutterBottom fontWeight="bold">
               Category: {product.category.name}
             </Typography>
-            <Typography variant="h6" color="primary" gutterBottom>
-              ${product.price}
+            <Typography variant="body1" color="textPrimary" gutterBottom fontWeight="bold">
+              Unit Price: ${product.price}
+            </Typography>
+            <Typography variant="body1" color="textPrimary" gutterBottom fontWeight="bold">
+              Sub Total: ${isNaN(product.price * quantity) ? 0 : (product.price * quantity).toFixed(2)}
             </Typography>
             <Box mt={2}>
               <TextField

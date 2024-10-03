@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { login } from "../features/slices/authSlice";
+import { login, clearError } from "../features/slices/authSlice";
 import {
   TextField,
   Button,
@@ -19,8 +19,31 @@ const Login = () => {
   const navigate = useNavigate();
   const { isAuthenticated, error, user } = useSelector((state) => state.auth);
 
+  const validateField = (name, value) => {
+    let errorMsg = "";
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (name === "email") {
+      if (!value) errorMsg = "Email is required";
+      else if (!emailRegex.test(value)) errorMsg = "Invalid email format";
+    }
+
+    if (name === "password") {
+      if (!value) errorMsg = "Password is required";
+    }
+
+    setErrors((prevErrors) => ({ ...prevErrors, [name]: errorMsg }));
+  };
+
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+    validateField(name, value);  // Validate as user types
+  };
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    validateField(name, value);  // Validate on field blur
   };
 
   const validate = () => {
@@ -43,6 +66,7 @@ const Login = () => {
       await dispatch(login(formData)).unwrap();
       toast.success("Login successful!", { autoClose: 2000 });
     } catch (err) {
+      // Handle errors if needed
     }
   };
 
@@ -55,13 +79,13 @@ const Login = () => {
       }
     }
   }, [isAuthenticated, user, navigate]);
-  
 
   useEffect(() => {
     if (error) {
       toast.error(error, { autoClose: 2000 });
+      dispatch(clearError());
     }
-  }, [error]);
+  }, [error, dispatch]);
 
   return (
     <Container maxWidth="xs">
@@ -87,6 +111,7 @@ const Login = () => {
             fullWidth
             margin="normal"
             onChange={handleChange}
+            onBlur={handleBlur}  // Trigger validation on blur
             value={formData.email}
             error={!!errors.email}
             helperText={errors.email}
@@ -98,6 +123,7 @@ const Login = () => {
             fullWidth
             margin="normal"
             onChange={handleChange}
+            onBlur={handleBlur}  // Trigger validation on blur
             value={formData.password}
             error={!!errors.password}
             helperText={errors.password}

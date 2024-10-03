@@ -120,6 +120,7 @@ const productSlice = createSlice({
         state.products = state.products.filter(
           (product) => product._id !== action.payload.product._id
         );
+        state.totalProducts -= 1;
       });
   },
 });

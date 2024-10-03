@@ -24,6 +24,7 @@ const ProductList = ({ category }) => {
   const [sort, setSort] = useState("");
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     const queryParams = {
@@ -46,11 +47,20 @@ const ProductList = ({ category }) => {
     setSelectedProduct(null);
   };
 
-  const sortedProducts = [...products].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  const filteredProducts = products.filter((product) =>
+    product.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <Container>
       <Box mb={2} display="flex" justifyContent="flex-end" mr={3} mt={2}>
+        <TextField
+          label="Search Products"
+          variant="outlined"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          sx={{ width: 300, marginRight: 2 }}
+        />
         <TextField
           select
           label="Sort by:"
@@ -75,40 +85,46 @@ const ProductList = ({ category }) => {
       </Box>
 
       <Grid2 container spacing={3}>
-        {sortedProducts.map((product) => (
-          <Grid2 item xs={12} sm={6} md={4} key={product._id}>
-            <Card
-              sx={{
-                height: "100%",
-                display: "flex",
-                flexDirection: "column",
-                boxShadow: 3,
-                cursor: "pointer",
-                transition: "transform 0.3s, box-shadow 0.3s",
-                "&:hover": {
-                  transform: "scale(1.05)",
-                  boxShadow: 6,
-                },
-              }}
-              onClick={() => openModal(product)}
-            >
-              <CardMedia
-                component="img"
-                image={`http://localhost:4000${product.image}`}
-                alt={product.title}
-                sx={{ width: "100%", height: "370px", objectFit: "cover" }}
-              />
-              <CardContent sx={{ flexGrow: 1 }}>
-                <Typography variant="h6" component="div" gutterBottom noWrap>
-                  {product.title}
-                </Typography>
-                <Typography variant="body1" color="primary" noWrap>
-                  ${product.price}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid2>
-        ))}
+        {filteredProducts.length === 0 ? ( 
+          <Typography variant="h6" color="text.secondary" align="center" sx={{ width: '100%', marginTop: 4 }}>
+            No products found
+          </Typography>
+        ) : (
+          filteredProducts.map((product) => (
+            <Grid2 item xs={12} sm={6} md={4} key={product._id}>
+              <Card
+                sx={{
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                  boxShadow: 3,
+                  cursor: "pointer",
+                  transition: "transform 0.3s, box-shadow 0.3s",
+                  "&:hover": {
+                    transform: "scale(1.05)",
+                    boxShadow: 6,
+                  },
+                }}
+                onClick={() => openModal(product)}
+              >
+                <CardMedia
+                  component="img"
+                  image={`http://localhost:4000${product.image}`}
+                  alt={product.title}
+                  sx={{ width: "100%", height: "370px", objectFit: "cover" }}
+                />
+                <CardContent sx={{ flexGrow: 1 }}>
+                  <Typography variant="h6" component="div" gutterBottom noWrap>
+                    {product.title}
+                  </Typography>
+                  <Typography variant="body1" color="primary" noWrap>
+                    ${product.price}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid2>
+          ))
+        )}
       </Grid2>
 
       {selectedProduct && (

@@ -8,6 +8,7 @@ import orderRoute from "./routes/order.js";
 import cartRoute from "./routes/cart.js";
 import categoryRoute from "./routes/category.js";
 import adminRoute from "./routes/admin.js";
+import newsletterRoute from "./routes/newsletter.js";
 
 dotenv.config();
 const app = express();
@@ -30,6 +31,7 @@ app.use("/api/products", productRoute);
 app.use("/api/order", orderRoute);
 app.use("/api/cart", cartRoute);
 app.use("/api/categories", categoryRoute);
+app.use("/api/newsletter", newsletterRoute);
 
 app.use("/api/admin", adminRoute);
 

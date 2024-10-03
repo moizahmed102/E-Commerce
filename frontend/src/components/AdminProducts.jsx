@@ -19,6 +19,7 @@ import {
   CircularProgress,
   Card,
   CardContent,
+  CardMedia,
   IconButton,
   Dialog,
   DialogActions,
@@ -39,12 +40,17 @@ const ProductForm = () => {
   const [showForm, setShowForm] = useState(false); 
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
+  const [searchQuery, setSearchQuery] = useState(""); // New state for search query
 
   const dispatch = useDispatch();
   const { loading, error, totalProducts, products } = useSelector(
     (state) => state.products
   );
-
+    // Filter products based on search query
+    const filteredProducts = products.filter((product) =>
+      product.title.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    
   const categories = [
     { id: "66d9868811e6a96f67e13aa5", name: "Men" },
     { id: "66dadedff305f99c187d26f7", name: "Women" },
@@ -143,6 +149,7 @@ const ProductForm = () => {
   const handleCancel = () => {
     resetForm(); 
     setShowForm(false); 
+
   };
   return (
     <Box sx={{ padding: 3, backgroundColor: "#f4f5f7" }}>
@@ -283,9 +290,18 @@ const ProductForm = () => {
           </Button>
         </DialogActions>
       </Dialog>
+      <Box sx={{ display: "flex", justifyContent: "center", marginBottom: 4, marginTop: 4 }}>
+  <TextField
+    label="Search by Title"
+    value={searchQuery}
+    onChange={(e) => setSearchQuery(e.target.value)} 
+    fullWidth
+    sx={{ maxWidth: 400 }}
+  />
+</Box>
 
       <Box sx={{ marginTop: 4 }}>
-        {products.map((product) => (
+        {filteredProducts.map((product) => (
           <Card
             key={product._id}
             sx={{
@@ -296,6 +312,12 @@ const ProductForm = () => {
             }}
           >
             <CardContent>
+            <CardMedia
+                component="img"
+                image={`http://localhost:4000${product.image}`}
+                alt={product.title}
+                sx={{ width: 100, height: 100, objectFit: "cover", marginRight: 2 }}
+              />
               <Typography variant="h6">{product.title}</Typography>
               <Typography>{product.description}</Typography>
               <Typography>{`Category: ${product.category.name}`}</Typography>
