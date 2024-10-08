@@ -1,0 +1,151 @@
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { login, clearError } from "../features/slices/authSlice";
+import {
+  TextField,
+  Button,
+  Container,
+  Typography,
+  Box,
+  Link,
+} from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+
+const Login = () => {
+  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [errors, setErrors] = useState({});
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { isAuthenticated, error, user } = useSelector((state) => state.auth);
+
+  const validateField = (name, value) => {
+    let errorMsg = "";
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (name === "email") {
+      if (!value) errorMsg = "Email is required";
+      else if (!emailRegex.test(value)) errorMsg = "Invalid email format";
+    }
+
+    if (name === "password") {
+      if (!value) errorMsg = "Password is required";
+    }
+
+    setErrors((prevErrors) => ({ ...prevErrors, [name]: errorMsg }));
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+    validateField(name, value);  // Validate as user types
+  };
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    validateField(name, value);  // Validate on field blur
+  };
+
+  const validate = () => {
+    let tempErrors = {};
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!formData.email) tempErrors.email = "Email is required";
+    else if (!emailRegex.test(formData.email)) tempErrors.email = "Invalid email format";
+
+    if (!formData.password) tempErrors.password = "Password is required";
+
+    setErrors(tempErrors);
+    return Object.keys(tempErrors).length === 0;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!validate()) return;
+    try {
+      await dispatch(login(formData)).unwrap();
+      toast.success("Login successful!", { autoClose: 2000 });
+    } catch (err) {
+      // Handle errors if needed
+    }
+  };
+
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      if (user.role === "admin") {
+        navigate("/admin", { replace: true });
+      } else {
+        navigate("/", { replace: true });
+      }
+    }
+  }, [isAuthenticated, user, navigate]);
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error, { autoClose: 2000 });
+      dispatch(clearError());
+    }
+  }, [error, dispatch]);
+
+  return (
+    <Container maxWidth="xs">
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          padding: 4,
+          borderRadius: 2,
+          boxShadow: 3,
+          mt: 3,
+        }}
+      >
+        <Typography variant="h4" align="center" gutterBottom>
+          Login
+        </Typography>
+        <form onSubmit={handleSubmit} style={{ width: "100%" }}>
+          <TextField
+            label="Email"
+            name="email"
+            type="email"
+            fullWidth
+            margin="normal"
+            onChange={handleChange}
+            onBlur={handleBlur}  // Trigger validation on blur
+            value={formData.email}
+            error={!!errors.email}
+            helperText={errors.email}
+          />
+          <TextField
+            label="Password"
+            name="password"
+            type="password"
+            fullWidth
+            margin="normal"
+            onChange={handleChange}
+            onBlur={handleBlur}  // Trigger validation on blur
+            value={formData.password}
+            error={!!errors.password}
+            helperText={errors.password}
+          />
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            fullWidth
+            sx={{ mt: 2 }}
+          >
+            Login
+          </Button>
+          <Box sx={{ mt: 2 }}>
+            <Typography variant="body2" align="center">
+              Don't have an account? <Link href="/signup">Sign Up</Link>
+            </Typography>
+          </Box>
+        </form>
+      </Box>
+    </Container>
+  );
+};
+
+export default Login;

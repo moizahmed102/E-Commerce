@@ -3,12 +3,13 @@ import Product from "../model/product.js";
 
 export const getCart = async (req, res) => {
   try {
-    const cart = await Cart.findOne({ user: req.user.id }).populate(
+    let cart = await Cart.findOne({ user: req.user.id }).populate(
       "orderItems.product",
-      "title price"
+      "title price image"
     );
     if (!cart) {
-      return res.status(404).json({ error: "Cart not found" });
+      cart = new Cart({ user: req.user.id, orderItems: [] });
+      await cart.save();
     }
     res.status(200).json(cart);
   } catch (err) {
