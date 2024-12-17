@@ -16,12 +16,8 @@ export const createOrderAsync = createAsyncThunk(
 export const getOrdersByUserAsync = createAsyncThunk(
   "order/getOrdersByUser",
   async (_, thunkAPI) => {
-    const userId = thunkAPI.getState().auth.user?.id;
-    if (!userId) {
-      return thunkAPI.rejectWithValue("User not authenticated");
-    }
     try {
-      const response = await fetchOrders(userId);
+      const response = await fetchOrders();
       return response;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response.data);
@@ -30,7 +26,7 @@ export const getOrdersByUserAsync = createAsyncThunk(
 );
 
 const orderSlice = createSlice({
-  name: "order",
+  name: "orders",
   initialState: {
     orders: [],
     loading: false,

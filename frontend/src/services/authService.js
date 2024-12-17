@@ -15,4 +15,8 @@ const getProfile = async () => {
   return response.data;
 };
 
-export { signupUser, loginUser, getProfile };
+const logoutUser = () => {
+  localStorage.removeItem("token");
+};
+
+export { signupUser, loginUser, getProfile, logoutUser };

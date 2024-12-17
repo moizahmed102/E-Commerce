@@ -29,7 +29,9 @@ const MainPage = () => {
     dispatch(fetchProducts());
   }, [dispatch]);
 
-  const featuredProducts = products.slice(0, 4);
+  const featuredProducts = products.slice() 
+  .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) 
+  .slice(0, 4); 
 
   if (loading) return <CircularProgress />;
   if (error) return <Alert severity="error">{error}</Alert>;
@@ -108,7 +110,7 @@ const MainPage = () => {
           }}
         >
           <img
-            src="/bg2.jpg"
+            src="/bg.jpg"
             alt="Promotion"
             style={{
               maxWidth: "100%",

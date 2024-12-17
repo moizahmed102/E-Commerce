@@ -3,8 +3,8 @@ import bcrypt from "bcryptjs";
 import User from "../model/User.js";
 
 const jwtauthtoken = (user) => {
-  return jwt.sign({ id: user._id }, process.env.JWT_KEY, {
-    expiresIn: "1d",
+  return jwt.sign({ id: user._id, role: user.role }, process.env.JWT_KEY, {
+    expiresIn: process.env.TOKEN_EXPIRESIN,
   });
 };
 
@@ -30,7 +30,7 @@ const userSignup = async (req, res) => {
       jwtauthtoken: jwtauthtoken(user),
     });
   } catch (error) {
-    res.status(500).json({ message: "Signup failed" });
+    res.status(500).json({ message: "Signup failed, Enter Valid Email" });
   }
 };
 
@@ -51,6 +51,7 @@ const userLogin = async (req, res) => {
       id: user._id,
       name: user.name,
       email: user.email,
+      role: user.role,
       jwtauthtoken: jwtauthtoken(user),
     });
   } catch (error) {

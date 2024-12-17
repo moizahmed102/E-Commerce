@@ -1,10 +1,41 @@
-import React from 'react';
-import { Box, Typography, Link, TextField, Button, useTheme } from '@mui/material';
+import {useState} from 'react';
+import { Box, Typography, Link, TextField, Button, CircularProgress, useTheme } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
+import { subscribeToNewsletter } from '../services/newsletterService';
 
 const Footer = () => {
   const theme = useTheme();
+  const [email, setEmail] = useState('');
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [loading, setLoading] = useState(false);
 
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+  const handleNewsletterSubmit = async () => {
+    setError('');
+    setSuccess('');
+    if (!email) {
+      setError('Email is required');
+      return;
+    }
+    if (!validateEmail(email)) {
+      setError('Invalid email format');
+      return;
+    }
+    setLoading(true); 
+    try {
+      const response = await subscribeToNewsletter(email);
+      setSuccess(response.message); 
+      setEmail(''); 
+    } catch (error) {
+      setError(error.message || 'Failed to subscribe. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <Box
       component="footer"
@@ -88,10 +119,10 @@ const Footer = () => {
           </Link>
         </Box>
 
-        <Box sx={{ flex: '1 1 25%', padding: '0 16px', boxSizing: 'border-box' }}>
+           <Box sx={{ flex: '1 1 25%', padding: '0 16px', boxSizing: 'border-box' }}>
           <Typography variant="h6" gutterBottom>
             Newsletter Signup
-          </Typography>
+           </Typography>
           <Typography variant="body2" gutterBottom>
             Subscribe to our Newsletter for Exclusive Updates
           </Typography>
@@ -99,11 +130,22 @@ const Footer = () => {
             fullWidth
             variant="outlined"
             placeholder="Your email address"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            error={!!error}
+            helperText={error}
             sx={{ marginBottom: '16px' }}
           />
-          <Button variant="contained" color="primary" fullWidth>
-            Subscribe
+            <Button
+            variant="contained"
+            color="primary"
+            fullWidth
+            onClick={handleNewsletterSubmit}
+            disabled={loading}
+          >
+            {loading ? <CircularProgress size={24} color="inherit" /> : 'Subscribe'}
           </Button>
+          {success && <Typography color="success.main">{success}</Typography>}
         </Box>
       </Box>
     </Box>

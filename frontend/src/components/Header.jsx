@@ -1,13 +1,5 @@
 import React from "react";
-import {
-  AppBar,
-  Toolbar,
-  Button,
-  Box,
-  IconButton,
-  useTheme,
-  Badge,
-} from "@mui/material";
+import { AppBar, Toolbar, Button, Box, IconButton, useTheme, Badge } from "@mui/material";
 import { Link } from "react-router-dom";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
@@ -17,8 +9,7 @@ const Header = () => {
   const theme = useTheme();
   const { cart } = useSelector((state) => state.cart);
 
-  const totalItems =
-    cart?.orderItems?.reduce((sum, item) => sum + item.quantity, 0) ?? 0;
+  const totalItems = cart?.orderItems?.reduce((sum, item) => sum + item.quantity, 0) ?? 0;
 
   return (
     <>
@@ -48,11 +39,7 @@ const Header = () => {
               <img
                 src="/logo.png"
                 alt="Logo"
-                style={{
-                  height: "45px",
-                  marginRight: "16px",
-                  borderRadius: "10px",
-                }}
+                style={{ height: "45px", marginRight: "16px", borderRadius: "10px" }}
               />
             </Box>
 

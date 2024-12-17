@@ -31,7 +31,11 @@ export const removeItemFromCart = createAsyncThunk(
 const cartSlice = createSlice({
   name: "cart",
   initialState,
-  reducers: {},
+  reducers: {
+    resetCart: (state) => {
+      state.cart = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchCart.pending, (state) => {
@@ -57,11 +61,12 @@ const cartSlice = createSlice({
 
         state.cart = {
           ...state.cart,
-          orderItems: updatedOrderItems.length > 0 ? updatedOrderItems : [],
+          orderItems: updatedOrderItems,
           totalPrice: updatedOrderItems.length > 0 ? updatedTotalPrice : 0,
         };
       });
   },
 });
 
+export const { resetCart } = cartSlice.actions;
 export default cartSlice.reducer;

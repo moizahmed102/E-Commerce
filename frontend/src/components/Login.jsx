@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { login } from "../features/slices/authSlice";
+import { login, clearError } from "../features/slices/authSlice";
 import {
   TextField,
   Button,
@@ -9,7 +9,7 @@ import {
   Box,
   Link,
 } from "@mui/material";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const Login = () => {
@@ -17,13 +17,33 @@ const Login = () => {
   const [errors, setErrors] = useState({});
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const location = useLocation();
-  const { isAuthenticated, error } = useSelector((state) => state.auth);
+  const { isAuthenticated, error, user } = useSelector((state) => state.auth);
 
-  const redirectPath = location.state?.from?.pathname || "/profile";
+  const validateField = (name, value) => {
+    let errorMsg = "";
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (name === "email") {
+      if (!value) errorMsg = "Email is required";
+      else if (!emailRegex.test(value)) errorMsg = "Invalid email format";
+    }
+
+    if (name === "password") {
+      if (!value) errorMsg = "Password is required";
+    }
+
+    setErrors((prevErrors) => ({ ...prevErrors, [name]: errorMsg }));
+  };
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+    validateField(name, value);  // Validate as user types
+  };
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    validateField(name, value);  // Validate on field blur
   };
 
   const validate = () => {
@@ -46,20 +66,26 @@ const Login = () => {
       await dispatch(login(formData)).unwrap();
       toast.success("Login successful!", { autoClose: 2000 });
     } catch (err) {
+      // Handle errors if needed
     }
   };
 
   useEffect(() => {
-    if (isAuthenticated) {
-      navigate(redirectPath, { replace: true });
+    if (isAuthenticated && user) {
+      if (user.role === "admin") {
+        navigate("/admin", { replace: true });
+      } else {
+        navigate("/", { replace: true });
+      }
     }
-  }, [isAuthenticated, navigate, redirectPath]);
+  }, [isAuthenticated, user, navigate]);
 
   useEffect(() => {
     if (error) {
       toast.error(error, { autoClose: 2000 });
+      dispatch(clearError());
     }
-  }, [error]);
+  }, [error, dispatch]);
 
   return (
     <Container maxWidth="xs">
@@ -71,7 +97,7 @@ const Login = () => {
           padding: 4,
           borderRadius: 2,
           boxShadow: 3,
-          mt: 5,
+          mt: 3,
         }}
       >
         <Typography variant="h4" align="center" gutterBottom>
@@ -85,6 +111,7 @@ const Login = () => {
             fullWidth
             margin="normal"
             onChange={handleChange}
+            onBlur={handleBlur}  // Trigger validation on blur
             value={formData.email}
             error={!!errors.email}
             helperText={errors.email}
@@ -96,6 +123,7 @@ const Login = () => {
             fullWidth
             margin="normal"
             onChange={handleChange}
+            onBlur={handleBlur}  // Trigger validation on blur
             value={formData.password}
             error={!!errors.password}
             helperText={errors.password}

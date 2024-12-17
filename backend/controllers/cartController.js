@@ -5,7 +5,7 @@ export const getCart = async (req, res) => {
   try {
     let cart = await Cart.findOne({ user: req.user.id }).populate(
       "orderItems.product",
-      "title price"
+      "title price image"
     );
     if (!cart) {
       cart = new Cart({ user: req.user.id, orderItems: [] });

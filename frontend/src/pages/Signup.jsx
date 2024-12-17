@@ -8,8 +8,8 @@ function Signup() {
    <>
    <Header />
     <SignupForm/>
-   <Footer />
-   </>
+    <Footer />
+    </>
   )
 }
 
