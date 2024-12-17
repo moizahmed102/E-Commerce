@@ -1,0 +1,64 @@
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createProduct, getProducts } from "../../services/productService";
+
+export const fetchProducts = createAsyncThunk(
+  "products/fetchProducts",
+  async (queryParams, thunkAPI) => {
+    try {
+      return await getProducts(queryParams);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
+export const addProduct = createAsyncThunk(
+  "products/addProduct",
+  async (productData, thunkAPI) => {
+    try {
+      return await createProduct(productData);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
+const initialState = {
+  products: [],
+  loading: false,
+  error: null,
+};
+
+const productSlice = createSlice({
+  name: "products",
+  initialState,
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchProducts.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchProducts.fulfilled, (state, action) => {
+        state.products = action.payload;
+        state.loading = false;
+      })
+      .addCase(fetchProducts.rejected, (state, action) => {
+        state.error = action.payload;
+        state.loading = false;
+      })
+      .addCase(addProduct.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(addProduct.fulfilled, (state, action) => {
+        state.products.push(action.payload.product);
+        state.loading = false;
+      })
+      .addCase(addProduct.rejected, (state, action) => {
+        state.error = action.payload;
+        state.loading = false;
+      });
+  },
+});
+
+export default productSlice.reducer;
